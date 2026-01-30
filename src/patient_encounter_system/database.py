@@ -1,14 +1,21 @@
-import mysql.connector
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-cnx = mysql.connector.MySQLConnection(
-    user="mongouhd_evernorth",
-    password="U*dgQkKRuEHe",
-    host="cp-15.webhostbox.net",
-    database="mongouhd_evernorth",
-    port=3306,
-)
-if cnx.is_connected():
-    print("Connected")
-cursor = cnx.cursor()
-cursor.close()
-cnx.close()
+DATABASE_URL = "mysql+mysqlconnector://mongouhd_evernorth:U*dgQkKRuEHe@cp-15.webhostbox.net:3306/mongouhd_evernorth"
+
+engine = create_engine(DATABASE_URL, echo=True, pool_pre_ping=True)
+
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+# Dependency for FastAPI
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
