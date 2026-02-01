@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey, Integer, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timedelta
-from .base import Base
+from src.patient_encounter_system.database import Base
 
 
 class Encounter(Base):
@@ -41,8 +41,9 @@ class Encounter(Base):
     )
 
     # Relationships (for querying convenience)
-    patient = relationship("Patient", backref="vaishnaviCH_appointments")
-    doctor = relationship("Doctor", backref="vaishnaviCH_appointments")
+    patient = relationship("Patient", back_populates="appointments")
+
+    doctor = relationship("Doctor", back_populates="appointments")
 
     # Derived: Calculate end time dynamically
     @property

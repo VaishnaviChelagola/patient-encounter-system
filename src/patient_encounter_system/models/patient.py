@@ -1,7 +1,7 @@
 from sqlalchemy import String, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
-from .base import Base
+from src.patient_encounter_system.database import Base
 
 
 class Patient(Base):
@@ -46,4 +46,4 @@ class Patient(Base):
         onupdate=func.now(),
     )
 
-    appointment = relationship("Encounter", backref="vaishnaviCH_appointments")
+    appointments = relationship("Encounter", back_populates="patient")
