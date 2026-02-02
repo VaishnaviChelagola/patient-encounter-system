@@ -10,7 +10,7 @@ MEMS is a backend system for managing medical encounters in a clinic. It handles
 - API endpoints for patients, doctors, and appointments  
 
 ## Tech Used
-Python 3.9+, FastAPI, SQLAlchemy, Pydantic, PostgreSQL/SQLite, Alembic (for migrations), Pytest (testing), GitHub Actions (CI/CD)  
+Python 3.9+, FastAPI, SQLAlchemy, Pydantic, MySQL, Alembic (for migrations), Pytest (testing), GitHub Actions (CI/CD)  
 
 ## How to Run
 * Clone the repository: 
