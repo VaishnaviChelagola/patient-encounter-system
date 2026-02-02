@@ -1,43 +1,47 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, text
-from datetime import timedelta
-from fastapi import HTTPException
+from sqlalchemy import text
+from datetime import timedelta, timezone, datetime
+from fastapi import HTTPException, status
 from src.patient_encounter_system.models.appointment import Encounter
 from src.patient_encounter_system.schemas.appointment import AppointmentCreate
 
 
 def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Encounter:
-    start = appointment_in.scheduled_start
-    end = start + timedelta(minutes=appointment_in.duration_minutes)
+    new_start = appointment_in.scheduled_start
+    if new_start.tzinfo is None:
+        new_start = new_start.replace(tzinfo=timezone.utc)
 
-    # Conflict check using raw SQL for MySQL
-    conflict = (
-        db.query(Encounter)
-        .filter(
-            Encounter.doctor_id == appointment_in.doctor_id,
-            and_(
-                Encounter.scheduled_start < end,
-                text(
-                    "DATE_ADD(vaishnaviCH_appointments.scheduled_start, "
-                    "INTERVAL vaishnaviCH_appointments.duration_minutes MINUTE) > :start"
-                ),
-            ),
-        )
-        .params(start=start)
-        .first()
-    )
+    new_end = new_start + timedelta(minutes=appointment_in.duration_minutes)
 
-    if conflict:
+    # Reject past appointments
+    if new_start < datetime.now(timezone.utc):
         raise HTTPException(
-            status_code=409, detail="Doctor has a conflicting appointment"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot create appointment in the past",
         )
 
-    appointment = Encounter(
-        patient_id=appointment_in.patient_id,
-        doctor_id=appointment_in.doctor_id,
-        scheduled_start=start,
-        duration_minutes=appointment_in.duration_minutes,
+    existing_appointments = (
+        db.query(Encounter)
+        .filter(Encounter.doctor_id == appointment_in.doctor_id)
+        .all()
     )
+
+    for appt in existing_appointments:
+        existing_start = appt.scheduled_start
+
+        # 🔑 Make DB datetime timezone-aware
+        if existing_start.tzinfo is None:
+            existing_start = existing_start.replace(tzinfo=timezone.utc)
+
+        existing_end = existing_start + timedelta(minutes=appt.duration_minutes)
+
+        if new_start < existing_end and new_end > existing_start:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Doctor already has an appointment during this time",
+            )
+
+    appointment = Encounter(**appointment_in.model_dump())
     db.add(appointment)
     db.commit()
     db.refresh(appointment)

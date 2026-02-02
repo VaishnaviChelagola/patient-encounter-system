@@ -1,25 +1,18 @@
-import requests
 import pytest
 from datetime import datetime, timedelta, timezone
-from requests.exceptions import ConnectionError, Timeout
+from fastapi.testclient import TestClient
 
-BASE_URL = "http://127.0.0.1:8000"
+from src.patient_encounter_system.main import app
 
-PATIENTS_ENDPOINT = f"{BASE_URL}/patients"
-DOCTORS_ENDPOINT = f"{BASE_URL}/doctors"
-APPOINTMENTS_ENDPOINT = f"{BASE_URL}/appointments"
-HEALTH_ENDPOINT = f"{BASE_URL}/health"
+client = TestClient(app)
 
 
 def test_server_is_reachable():
     """
-    Ensure the backend server is running and reachable.
+    Ensure the application is reachable.
     """
-    try:
-        response = requests.get(HEALTH_ENDPOINT, timeout=3)
-        assert response.status_code == 200
-    except (ConnectionError, Timeout):
-        pytest.fail("Server is NOT reachable")
+    response = client.get("/health")
+    assert response.status_code == 200
 
 
 @pytest.fixture(scope="module")
@@ -34,7 +27,7 @@ def patient_id():
         "phone_number": "9876543210",
     }
 
-    response = requests.post(PATIENTS_ENDPOINT, json=payload)
+    response = client.post("/patients", json=payload)
     assert response.status_code in (200, 201)
 
     data = response.json()
@@ -47,9 +40,12 @@ def doctor_id():
     """
     Create a doctor for appointment tests.
     """
-    payload = {"full_name": "Dr. Smith", "specialization": "Cardiology"}
+    payload = {
+        "full_name": "Dr. Smith",
+        "specialization": "Cardiology",
+    }
 
-    response = requests.post(DOCTORS_ENDPOINT, json=payload)
+    response = client.post("/doctors", json=payload)
     assert response.status_code in (200, 201)
 
     data = response.json()
@@ -76,7 +72,7 @@ def test_create_appointment(patient_id, doctor_id, appointment_start_time):
         "duration_minutes": 30,
     }
 
-    response = requests.post(APPOINTMENTS_ENDPOINT, json=payload)
+    response = client.post("/appointments", json=payload)
     assert response.status_code == 201
 
     data = response.json()
@@ -93,11 +89,11 @@ def test_appointment_conflict_detection(patient_id, doctor_id, appointment_start
     payload = {
         "patient_id": patient_id,
         "doctor_id": doctor_id,
-        "scheduled_start": appointment_start_time,  # same time
+        "scheduled_start": appointment_start_time,
         "duration_minutes": 30,
     }
 
-    response = requests.post(APPOINTMENTS_ENDPOINT, json=payload)
+    response = client.post("/appointments", json=payload)
     assert response.status_code == 409
 
 
@@ -111,10 +107,10 @@ def test_reject_past_appointment(patient_id, doctor_id):
         "duration_minutes": 30,
     }
 
-    response = requests.post(APPOINTMENTS_ENDPOINT, json=payload)
+    response = client.post("/appointments", json=payload)
 
     # API currently allows past appointments
-    assert response.status_code == 201
+    assert response.status_code == 400
 
 
 def test_reject_naive_datetime(patient_id, doctor_id):
@@ -127,7 +123,7 @@ def test_reject_naive_datetime(patient_id, doctor_id):
         "duration_minutes": 30,
     }
 
-    response = requests.post(APPOINTMENTS_ENDPOINT, json=payload)
+    response = client.post("/appointments", json=payload)
 
     # Pydantic validation error
     assert response.status_code == 422
@@ -139,7 +135,7 @@ def test_get_appointments_by_date():
     """
     date_str = (datetime.now(timezone.utc) + timedelta(days=1)).date().isoformat()
 
-    response = requests.get(APPOINTMENTS_ENDPOINT, params={"date": date_str})
+    response = client.get("/appointments", params={"appointment_date": date_str})
 
     assert response.status_code == 200
     assert isinstance(response.json(), list)
