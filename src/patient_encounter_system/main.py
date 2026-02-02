@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from datetime import date
 
 from src.patient_encounter_system.database import get_db, Base, engine
-from src.patient_encounter_system.models.patient import Patient
-from src.patient_encounter_system.models.doctor import Doctor
-from src.patient_encounter_system.models.appointment import Encounter
+
+# from src.patient_encounter_system.models.patient import Patient
+# from src.patient_encounter_system.models.doctor import Doctor
+# from src.patient_encounter_system.models.appointment import Encounter
 from src.patient_encounter_system.schemas.patient import PatientCreate, PatientRead
 from src.patient_encounter_system.schemas.doctor import DoctorCreate, DoctorRead
 from src.patient_encounter_system.schemas.appointment import (
@@ -17,7 +17,6 @@ from src.patient_encounter_system.services import (
     doctor_service,
     appointment_service,
 )
-
 
 app = FastAPI(title="Patient Encounter System API")
 
@@ -68,9 +67,11 @@ def create_appointment(
 
 @app.get("/appointments", response_model=list[AppointmentRead])
 def list_appointments(
-    date: str, doctor_id: int | None = None, db: Session = Depends(get_db)
+    appointment_date: str,
+    doctor_id: int | None = None,
+    db: Session = Depends(get_db),
 ):
-    return appointment_service.list_appointments(db, date, doctor_id)
+    return appointment_service.list_appointments(db, appointment_date, doctor_id)
 
 
 @app.get("/health")

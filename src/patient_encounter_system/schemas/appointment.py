@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class AppointmentCreate(BaseModel):
