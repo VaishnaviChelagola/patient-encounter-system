@@ -23,9 +23,10 @@ app = FastAPI(title="Patient Encounter System API")
 
 @app.on_event("startup")
 def startup():
-    # Create tables if they don't exist (this will run only on app startup)
-    Base.metadata.create_all(bind=engine)
-    print("Tables created successfully!")
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print("Startup DB init failed:", e)
 
 
 # ------------------- Patient Endpoints -------------------
