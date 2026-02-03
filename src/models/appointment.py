@@ -28,7 +28,7 @@ class Appointment(Base):
     )
 
     # Duration in minutes
-    duration_minutes: Mapped[int] = mapped_column(
+    duration: Mapped[int] = mapped_column(
         Integer,
         nullable=False,
     )
@@ -48,4 +48,4 @@ class Appointment(Base):
     # Derived: Calculate end time dynamically
     @property
     def scheduled_end(self) -> datetime:
-        return self.scheduled_start + timedelta(minutes=self.duration_minutes)
+        return self.scheduled_start + timedelta(minutes=self.duration)

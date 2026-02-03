@@ -11,7 +11,7 @@ class AppointmentCreate(BaseModel):
         description="Timezone-aware appointment start datetime",
     )
 
-    duration_minutes: int = Field(
+    duration: int = Field(
         ...,
         gt=0,
         le=480,  # max 8 hours
@@ -30,7 +30,7 @@ class AppointmentRead(BaseModel):
     patient_id: int
     doctor_id: int
     scheduled_start: datetime
-    duration_minutes: int
+    duration: int
     created_at: datetime
 
     # Derived field (not stored)

@@ -7,14 +7,14 @@ from src.schemas.appointment import AppointmentCreate
 
 
 def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Appointment:
-    new_start = appointment_in.scheduled_start
-    if new_start.tzinfo is None:
-        new_start = new_start.replace(tzinfo=timezone.utc)
+    start_time = appointment_in.scheduled_start
+    if start_time.tzinfo is None:
+        start_time = start_time.replace(tzinfo=timezone.utc)
 
-    new_end = new_start + timedelta(minutes=appointment_in.duration_minutes)
+    new_end = start_time + timedelta(minutes=appointment_in.duration)
 
     # Reject past appointments
-    if new_start < datetime.now(timezone.utc):
+    if start_time < datetime.now(timezone.utc):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot create appointment in the past",
@@ -29,13 +29,13 @@ def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Appoin
     for appt in existing_appointments:
         existing_start = appt.scheduled_start
 
-        # 🔑 Make DB datetime timezone-aware
+        # Make DB datetime timezone-aware
         if existing_start.tzinfo is None:
             existing_start = existing_start.replace(tzinfo=timezone.utc)
 
-        existing_end = existing_start + timedelta(minutes=appt.duration_minutes)
+        existing_end = existing_start + timedelta(minutes=appt.duration)
 
-        if new_start < existing_end and new_end > existing_start:
+        if start_time < existing_end and new_end > existing_start:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Doctor already has an appointment during this time",

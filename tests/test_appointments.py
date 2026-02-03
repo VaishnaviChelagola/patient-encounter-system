@@ -69,7 +69,7 @@ def test_create_appointment(patient_id, doctor_id, appointment_start_time):
         "patient_id": patient_id,
         "doctor_id": doctor_id,
         "scheduled_start": appointment_start_time,
-        "duration_minutes": 30,
+        "duration": 30,
     }
 
     response = client.post("/appointments", json=payload)
@@ -90,7 +90,7 @@ def test_appointment_conflict_detection(patient_id, doctor_id, appointment_start
         "patient_id": patient_id,
         "doctor_id": doctor_id,
         "scheduled_start": appointment_start_time,
-        "duration_minutes": 30,
+        "duration": 30,
     }
 
     response = client.post("/appointments", json=payload)
@@ -104,7 +104,7 @@ def test_reject_past_appointment(patient_id, doctor_id):
         "patient_id": patient_id,
         "doctor_id": doctor_id,
         "scheduled_start": past_time,
-        "duration_minutes": 30,
+        "duration": 30,
     }
 
     response = client.post("/appointments", json=payload)
@@ -120,7 +120,7 @@ def test_reject_naive_datetime(patient_id, doctor_id):
         "patient_id": patient_id,
         "doctor_id": doctor_id,
         "scheduled_start": naive_time,
-        "duration_minutes": 30,
+        "duration": 30,
     }
 
     response = client.post("/appointments", json=payload)
