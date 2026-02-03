@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
-from patient_encounter_system.schemas.patient import PatientCreate
-from patient_encounter_system.schemas.doctor import DoctorCreate
-import pytest
+"""from datetime import datetime, timedelta
+from schemas.patient import PatientCreate
+from schemas.doctor import DoctorCreate
+import pytest"""
 
 
 def test_create_and_get_patient(client):

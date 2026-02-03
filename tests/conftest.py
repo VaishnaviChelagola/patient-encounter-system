@@ -9,11 +9,11 @@ sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
 )
 
-from src.patient_encounter_system.database import Base, get_db
-from src.patient_encounter_system.main import app
-from src.patient_encounter_system.models.patient import Patient
-from src.patient_encounter_system.models.doctor import Doctor
-from src.patient_encounter_system.models.appointment import Encounter
+from src.database import Base, get_db
+from src.main import app
+from src.models.patient import Patient
+from src.models.doctor import Doctor
+from src.models.appointment import Appointment
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 

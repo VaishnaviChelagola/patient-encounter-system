@@ -1,6 +1,3 @@
-from datetime import datetime
-
-
 def test_create_and_get_patient(client):
     # Create patient
     response = client.post(

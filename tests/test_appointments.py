@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime, timedelta, timezone
 from fastapi.testclient import TestClient
 
-from src.patient_encounter_system.main import app
+from src.main import app
 
 client = TestClient(app)
 

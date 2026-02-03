@@ -1,10 +1,10 @@
 from sqlalchemy import ForeignKey, Integer, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timedelta
-from src.patient_encounter_system.database import Base
+from src.database import Base
 
 
-class Encounter(Base):
+class Appointment(Base):
     __tablename__ = "vaishnaviCH_appointments"
 
     id: Mapped[int] = mapped_column(primary_key=True)

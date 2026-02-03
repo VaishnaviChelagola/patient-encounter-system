@@ -1,18 +1,18 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
-from src.patient_encounter_system.database import get_db, Base, engine
+from src.database import get_db, Base, engine
 
 # from src.patient_encounter_system.models.patient import Patient
 # from src.patient_encounter_system.models.doctor import Doctor
 # from src.patient_encounter_system.models.appointment import Encounter
-from src.patient_encounter_system.schemas.patient import PatientCreate, PatientRead
-from src.patient_encounter_system.schemas.doctor import DoctorCreate, DoctorRead
-from src.patient_encounter_system.schemas.appointment import (
+from src.schemas.patient import PatientCreate, PatientRead
+from src.schemas.doctor import DoctorCreate, DoctorRead
+from src.schemas.appointment import (
     AppointmentCreate,
     AppointmentRead,
 )
-from src.patient_encounter_system.services import (
+from src.services import (
     patient_service,
     doctor_service,
     appointment_service,

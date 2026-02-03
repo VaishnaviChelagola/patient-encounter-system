@@ -1,7 +1,7 @@
 from sqlalchemy import String, Boolean, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
-from src.patient_encounter_system.database import Base
+from src.database import Base
 
 
 class Doctor(Base):
@@ -33,4 +33,4 @@ class Doctor(Base):
         server_default=func.now(),
     )
 
-    appointments = relationship("Encounter", back_populates="doctor")
+    appointments = relationship("Appointment", back_populates="doctor")

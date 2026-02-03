@@ -2,11 +2,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from datetime import timedelta, timezone, datetime
 from fastapi import HTTPException, status
-from src.patient_encounter_system.models.appointment import Encounter
-from src.patient_encounter_system.schemas.appointment import AppointmentCreate
+from src.models.appointment import Appointment
+from src.schemas.appointment import AppointmentCreate
 
 
-def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Encounter:
+def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Appointment:
     new_start = appointment_in.scheduled_start
     if new_start.tzinfo is None:
         new_start = new_start.replace(tzinfo=timezone.utc)
@@ -21,8 +21,8 @@ def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Encoun
         )
 
     existing_appointments = (
-        db.query(Encounter)
-        .filter(Encounter.doctor_id == appointment_in.doctor_id)
+        db.query(Appointment)
+        .filter(Appointment.doctor_id == appointment_in.doctor_id)
         .all()
     )
 
@@ -41,7 +41,7 @@ def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Encoun
                 detail="Doctor already has an appointment during this time",
             )
 
-    appointment = Encounter(**appointment_in.model_dump())
+    appointment = Appointment(**appointment_in.model_dump())
     db.add(appointment)
     db.commit()
     db.refresh(appointment)
@@ -51,12 +51,12 @@ def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Encoun
 def list_appointments(db: Session, date, doctor_id=None):
 
     query = (
-        db.query(Encounter)
+        db.query(Appointment)
         .filter(text("DATE(scheduled_start) = :date"))
         .params(date=date)
     )
 
     if doctor_id:
-        query = query.filter(Encounter.doctor_id == doctor_id)
+        query = query.filter(Appointment.doctor_id == doctor_id)
 
     return query.all()

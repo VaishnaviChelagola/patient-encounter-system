@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from src.patient_encounter_system.models.patient import Patient
-from src.patient_encounter_system.schemas.patient import PatientCreate
+from src.models.patient import Patient
+from src.schemas.patient import PatientCreate
 from fastapi import HTTPException
 
 
