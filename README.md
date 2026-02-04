@@ -14,7 +14,7 @@ Python 3.9+, FastAPI, SQLAlchemy, Pydantic, MySQL, Alembic (for migrations), Pyt
 
 ## How to Run
 * Clone the repository: 
-  `git clone <repo-url>`
+  `git clone <https://github.com/VaishnaviChelagola/patient-encounter-system>`
 * Navigate into the folder:
    `cd patient-encounter-system`
 * Install dependencies:
