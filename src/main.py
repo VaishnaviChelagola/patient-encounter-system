@@ -18,7 +18,6 @@ from src.services import (
     appointment_service,
 )
 
-
 app = FastAPI(title="Patient Encounter System API")
 
 
