@@ -34,8 +34,8 @@ def create_appointment(db: Session, appointment_in: AppointmentCreate) -> Appoin
             existing_start = existing_start.replace(tzinfo=timezone.utc)
 
         existing_end = existing_start + timedelta(minutes=appt.duration)
-
-        if start_time < existing_end and new_end > existing_start:
+        overlap = start_time < existing_end and new_end > existing_start
+        if overlap:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Doctor already has an appointment during this time",

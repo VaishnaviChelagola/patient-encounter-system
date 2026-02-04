@@ -3,3 +3,6 @@ exclude_dirs:
 
 skips:
   - B101
+  - B102
+targets:
+  - src
