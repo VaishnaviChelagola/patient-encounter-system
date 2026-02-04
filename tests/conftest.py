@@ -14,13 +14,8 @@ from src.main import app
 from src.models.patient import Patient
 from src.models.doctor import Doctor
 from src.models.appointment import Appointment
+from src.database import engine
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-)
 
 TestingSessionLocal = sessionmaker(
     autocommit=False,

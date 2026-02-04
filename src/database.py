@@ -4,16 +4,22 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from dotenv import load_dotenv
 
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 
-# engine = create_engine(DATABASE_URL, echo=True, pool_pre_ping=True)
-engine = create_engine(
-    DATABASE_URL,
-    pool_pre_ping=True,
-    pool_timeout=5,
-    connect_args={"connect_timeout": 5},
-    echo=True,
-)
+if DATABASE_URL.startswith("sqlite"):
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False},
+        echo=True,
+    )
+else:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_timeout=5,
+        connect_args={"connect_timeout": 5},
+        echo=True,
+    )
 
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
